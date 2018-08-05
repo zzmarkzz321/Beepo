@@ -107,7 +107,7 @@ exports.getUserSubmissions = functions.https.onRequest((req, res) => {
         const participantId = req.body.userId;
         const songGuess = req.body.song;
         const hidingSpotRef = db.collection('hidingSpot');
-
+        const submissionSent = new Date().getTime();
         return hidingSpotRef.get()
             .then(snapshot => {
                 // Add user's input to the current hiding spots collection
@@ -116,8 +116,11 @@ exports.getUserSubmissions = functions.https.onRequest((req, res) => {
                     currentHidingSpot = doc.id;
                 });
                 console.log(`current hiding spot: ${currentHidingSpot}`);
-                return hidingSpotRef.doc(currentHidingSpot).set({
-                    [participantId]: songGuess,
+                return hidingSpotRef.doc(currentHidingSpot).update({
+                    [participantId]: {
+                        songGuess,
+                        submissionSent,
+                    },
                 })
             })
             .then(() => {
