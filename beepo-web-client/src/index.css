@@ -4,6 +4,10 @@ body {
   font-family: Fipps-Regular;
 }
 
+button {
+    font-family: Fipps-Regular, "Helvetica Neue";
+}
+
 th, td {
   padding: 20px;
 }
@@ -16,7 +20,7 @@ th, td {
 .button {
     background-color: white;
     border-radius: 6px;
-    padding: 20px;
+    padding: 12px 20px;
     margin: 0 10px;
 }
 
