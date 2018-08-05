@@ -62,5 +62,6 @@ typings/
 .firebaserc
 .idea
 firebase.json
+beepo-web-client/firebase.config.js
 
 
