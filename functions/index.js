@@ -7,6 +7,60 @@ admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
 
 /**
+ * Starts a webhook subscription for a given streamer
+ */
+exports.subscribeToStreamerStatus = functions.https.onRequest((req, res) => {
+    const userId = req.body.userId;
+    axios.create({
+        url: 'https://api.twitch.tv/helix/webhooks/hub',
+        method: 'POST',
+        data: {
+            "hub.mode": "subscribe",
+            "hub.topic": `https://api.twitch.tv/helix/streams?user_id=${userId}`,
+            "hub.callback": "https://us-central1-beepo-5df66.cloudfunctions.net/addToPlayGround",
+            // "hub.secret": 's3cRe7'
+        },
+        headers: {
+            'Client-ID': 'p9ifvvlcydmeft82whtbqha27zxas0',
+            'Content-Type': 'application/json'
+        }
+    })
+});
+
+/**
+ * Adds Streamer to the playground
+ */
+exports.toggleToPlayGround = functions.https.onRequest((req, res) => {
+    const playground = req.body.data;
+    playground.forEach(hidingSpot => {
+        if (hidingSpot.type === 'live') {
+            // add to the playground
+            const playgroundRef = db.collection('playground');
+            return playgroundRef.doc(hidingSpot.user_id).set()
+                .then(() => {
+                    console.log('success, removed streamer from playground');
+                    return res.send('Success!');
+                })
+                .catch(error => {
+                    console.log(`error removing streamer from playgroud`);
+                    return res.status(500).send('Oops! Something went wrong.');
+                })
+        } else {
+            // remove from playground
+            return playgroundRef.doc(hidingSpot.user_id).delete()
+                .then(() => {
+                    console.log('success, removed streamer from playground');
+                    return res.send('Success!');
+                })
+                .catch(error => {
+                    console.log(`error removing streamer from playgroud`);
+                    return res.status(500).send('Oops! Something went wrong.');
+                })
+        }
+    })
+});
+
+/**
  * Deploys beepo to his designated hiding spot
  */
 // exports.deployBeepo = functions.pubsub.topic('twenty-five-minute-tick').onPublish((event) => {
@@ -136,6 +190,10 @@ exports.getUserSubmissions = functions.https.onRequest((req, res) => {
     }
 });
 
+/**
+ * Testing function
+ * @type {HttpsFunction}
+ */
 exports.test= functions.https.onRequest((req, res) => {
     // look in the playground and search for a new hiding spot
     // Place hiding spot in hidingSpot
