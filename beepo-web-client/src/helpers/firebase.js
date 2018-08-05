@@ -1,4 +1,4 @@
-import {db} from './firebase.config';
+import {db} from '../../firebase.config';
 
 const getTopXUsersAPI = (limit) => {
     return db.collection("userData").orderBy('points').limit(limit).get();
