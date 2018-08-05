@@ -7,13 +7,15 @@ import Prizes from './Components/Layout/prizes';
 import Hint from './Components/Layout/hint';
 import LeaderBoards from './Components/Layout/leader_boards';
 
+import Beepo from './assets/beepo.png';
+
 class App extends Component {
     render() {
         return (
             <Router>
                 <div className="App">
                     <header className="App-header">
-                        <h1 className="beepo-title">Beepo</h1>
+                        <h1 className="beepo-title">Beepo <img className='beepo' src={Beepo}/></h1>
                         <MainMenu/>
                     </header>
 

@@ -4,7 +4,24 @@ body {
   font-family: Fipps-Regular;
 }
 
+th, td {
+  padding: 20px;
+}
+
 @font-face {
   font-family: Fipps-Regular;
   src: url("./assets/Fipps-Regular.otf") format("opentype");
+}
+
+.button {
+    background-color: white;
+    border-radius: 6px;
+    padding: 20px;
+    margin: 0 10px;
+}
+
+.button:hover {
+    background-color: red;
+    border: 1px solid red;
+    color: white;
 }

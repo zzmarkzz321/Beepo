@@ -9,7 +9,7 @@
 
 .App-header {
   background-color: #222;
-  height: 350px;
+  height: 450px;
   padding: 20px;
   color: white;
 }
@@ -24,6 +24,10 @@
 
 .beepo-title {
     font-size: 80px;
+}
+
+.beepo {
+  transform: scale(.3);
 }
 
 @keyframes App-logo-spin {
