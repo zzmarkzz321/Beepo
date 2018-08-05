@@ -1,0 +1,10 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Fipps-Regular;
+}
+
+@font-face {
+  font-family: Fipps-Regular;
+  src: url("./assets/Fipps-Regular.otf") format("opentype");
+}

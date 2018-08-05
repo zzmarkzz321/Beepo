@@ -1,0 +1,12 @@
+{
+  "name": "Beepo",
+  "version": "0.0.1",
+  "description": "A hide and go seek companion ",
+  "main": "index.js",
+  "repository": "https://github.com/zzmarkzz321/Beepo.git",
+  "author": "Mark renzo Santiago <ms103804@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "firebase-tools": "^4.0.2"
+  }
+}
