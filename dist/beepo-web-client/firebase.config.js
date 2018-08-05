@@ -1,5 +1,10 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.db = undefined;
+
 var _app = require('firebase/app');
 
 var _app2 = _interopRequireDefault(_app);
@@ -18,5 +23,5 @@ var config = {
 };
 _app2.default.initializeApp(config);
 // Initialize Cloud Firestore through Firebase
-var db = _app2.default.firestore();
+var db = exports.db = _app2.default.firestore();
 //# sourceMappingURL=firebase.config.js.map

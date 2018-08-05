@@ -6,6 +6,9 @@ admin.initializeApp(functions.config().firebase);
 
 const db = admin.firestore();
 
+/**
+ * Deploys beepo to his designated hiding spot
+ */
 // exports.deployBeepo = functions.pubsub.topic('twenty-five-minute-tick').onPublish((event) => {
 //     // Get the current hidingSpot and push beepo to their channel
 //     // Pushing beepo is simply a message to the client
@@ -38,12 +41,19 @@ const db = admin.firestore();
 //         },
 //     });
 // };
+
+/**
+ * Grabs a random song from the UMG 7 Digital API
+ * @return {*}
+ */
 const getRandomSong = () => {
     return fetch('http://api.7digital.com/1.2/artist/browse?shopId=2020&oauth_consumer_key=7d4vr6cgb392&letter=Drake');
 };
 
-// Example request to 7digital:
-// http://api.7digital.com/1.2/track/search?shopId=2020&oauth_consumer_key=7d4vr6cgb392&q=Michael%20Jackson&usageTypes=adsupportedstreaming
+/**
+ * Finds a new hiding spot for Beepo from the current playground
+ * @type {CloudFunction<Message> | *}
+ */
 exports.findNewHidingSpot = functions.pubsub.topic('twenty-minute-tick').onPublish((event) => {
     // look in the playground and search for a new hiding spot
     // Place hiding spot in hidingSpot
@@ -68,11 +78,14 @@ exports.findNewHidingSpot = functions.pubsub.topic('twenty-minute-tick').onPubli
             // Randomly choose a hiding spot and save it
             const activeStreamCount = snapshot.size;
             const randomStreamer = Math.floor(Math.random() * activeStreamCount);
+            console.log(randomStreamer);
             let hidingSpot = 'testId3';
-            snapshot.forEach((doc, index) => {
-                if (index === randomStreamer-1 || index === randomStreamer)  {
+            let iterator = 1;
+            snapshot.forEach((doc) => {
+                if (iterator === randomStreamer)  {
                     hidingSpot = doc.id;
                 }
+                iterator = iterator + 1;
             });
             return hidingSpotRef.doc(hidingSpot).set({});
         })
@@ -81,16 +94,38 @@ exports.findNewHidingSpot = functions.pubsub.topic('twenty-minute-tick').onPubli
         });
 });
 
+/**
+ * Listens for user submissions to the jukebox challenge
+ * @type {HttpsFunction}
+ */
 exports.getUserSubmissions = functions.https.onRequest((req, res) => {
+    res.set('Access-Control-Allow-Origin', '*')
+        .set('Access-Control-Allow-Headers', '*')
+        .set('Access-Control-Allow-Methods', 'GET, POST')
+        .status(200);
     try {
-        res.set('Access-Control-Allow-Origin', '*')
-            .set('Access-Control-Allow-Headers', '*')
-            .set('Access-Control-Allow-Methods', 'GET, POST')
-            .status(200);
         const participantId = req.body.userId;
         const songGuess = req.body.song;
-        console.log(req.body);
-        return res.status(201).send(songGuess, participantId);
+        const hidingSpotRef = db.collection('hidingSpot');
+
+        return hidingSpotRef.get()
+            .then(snapshot => {
+                // Add user's input to the current hiding spots collection
+                let currentHidingSpot = '';
+                snapshot.forEach(doc => {
+                    currentHidingSpot = doc.id;
+                });
+                console.log(`current hiding spot: ${currentHidingSpot}`);
+                return hidingSpotRef.doc(currentHidingSpot).set({
+                    [participantId]: songGuess,
+                })
+            })
+            .then(() => {
+                return res.status(201).send(songGuess, participantId);
+            })
+            .catch(error => {
+                console.error(error);
+            })
     }
     catch(e) {
         console.error(e);
@@ -98,18 +133,43 @@ exports.getUserSubmissions = functions.https.onRequest((req, res) => {
     }
 });
 
-exports.testFindPlayground = functions.https.onRequest((req, res) => {
-    // // const text = req.query.text;
-    return axios.get('http://api.7digital.com/1.2/artist/browse?shopId=2020&oauth_consumer_key=7d4vr6cgb392&letter=Drake')
-        .then(response => {
-            console.log(response);
-            return res.send('Nice! Found the song')
+exports.test= functions.https.onRequest((req, res) => {
+    // look in the playground and search for a new hiding spot
+    // Place hiding spot in hidingSpot
+    const playgroundRef = db.collection('playground');
+    const hidingSpotRef = db.collection('hidingSpot');
+
+    return hidingSpotRef.get()
+        .then(snapshot => {
+            // Delete the existing hiding spot
+            let oldHidingSpot = '';
+            snapshot.forEach(doc => {
+                oldHidingSpot = doc.id;
+            });
+            console.log(oldHidingSpot);
+            return hidingSpotRef.doc(oldHidingSpot).delete();
+        })
+        .then(() => {
+            // Get all available playgrounds
+            return playgroundRef.get();
+        })
+        .then(snapshot => {
+            // Randomly choose a hiding spot and save it
+            const activeStreamCount = snapshot.size;
+            const randomStreamer = Math.floor(Math.random() * activeStreamCount);
+            console.log(`random streamer ${randomStreamer}`);
+            let hidingSpot = 'testId3';
+            let iterator = 1;
+            snapshot.forEach((doc) => {
+                if (iterator === randomStreamer)  {
+                    hidingSpot = doc.id;
+                }
+                iterator = iterator + 1;
+            });
+            return hidingSpotRef.doc(hidingSpot).set({});
         })
         .catch(error => {
             console.error(error);
-            return res.status(500).send('error');
-        })
-    // look in the playground and search for a new hiding spot
-    // Place hiding spot in hidingSpot
+        });
 });
 

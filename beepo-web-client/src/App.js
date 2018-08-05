@@ -5,6 +5,7 @@ import './App.css';
 import {MainMenu} from "./Components/Core/main_menu";
 import Prizes from './Components/Layout/prizes';
 import Hint from './Components/Layout/hint';
+import SignIn from './Components/Layout/signin'
 import LeaderBoards from './Components/Layout/leader_boards';
 
 import Beepo from './assets/beepo.png';
@@ -23,6 +24,7 @@ class App extends Component {
                         <Route exact path="/prizes" component={Prizes} />
                         <Route exact path="/hint" component={Hint} />
                         <Route exact path="/leader-boards" component={LeaderBoards} />
+                        <Route exact path="/sign-in" component={SignIn} />
                     </div>
                 </div>
             </Router>

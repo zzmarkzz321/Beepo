@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getBeepoHint = exports.getTopFive = undefined;
 
-var _firebase = require('../../firebase.config');
+var _firebase = require('../firebase.config');
 
 var getTopXUsersAPI = function getTopXUsersAPI(limit) {
     return _firebase.db.collection("userData").orderBy('points').limit(limit).get();

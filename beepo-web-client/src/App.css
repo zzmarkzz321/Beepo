@@ -28,6 +28,8 @@
 
 .beepo {
   transform: scale(.3);
+    position: relative;
+    right: 77px;
 }
 
 @keyframes App-logo-spin {
